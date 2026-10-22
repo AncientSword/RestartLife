@@ -1,0 +1,58 @@
+<view class="guide">
+  <view class="progress">第 {{step}} / 3 步</view>
+  <block wx:if="{{step === 1}}">
+    <view class="title">开始你的 21 天</view>
+    <view class="description">从几个小目标开始，每天打卡，记录感受，看看自己的变化。</view>
+    <view class="card">
+      <view class="card-title">选择开始日期</view>
+      <picker mode="date" value="{{startDate}}" start="{{today}}" bindchange="onDateChange">
+        <view class="date">{{startDate}}　›</view>
+      </picker>
+      <view class="description">计划结束于 {{endDate}}</view>
+    </view>
+    <view class="description"><view>打卡项目：需要反复坚持的习惯。</view><view>任务清单：完成一次的小目标。</view></view>
+  </block>
+  <view wx:if="{{step === 2}}" hidden="{{step !== 2}}">
+    <view class="title">选择想坚持的习惯</view>
+    <view class="description">默认不添加项目，勾选后才会创建。以后可以在“项目”里新增、编辑和选择具体目标日。</view>
+  </view>
+  <view hidden="{{step !== 2}}" class="card">
+    <checkbox-group bindchange="onTasksChange">
+      <view wx:for="{{habits}}" wx:key="id" class="habit">
+        <label class="option"><checkbox value="{{item.id}}" color="#5B8C5A" />{{item.icon}} {{item.name}}</label>
+        <radio-group class="schedule" data-id="{{item.id}}" catchchange="onScheduleChange">
+          <label><radio value="daily" checked="{{item.schedule === 'daily'}}" color="#5B8C5A" />每天</label>
+          <label><radio value="alternate" checked="{{item.schedule === 'alternate'}}" color="#5B8C5A" />隔天</label>
+          <label><radio value="custom" checked="{{item.schedule === 'custom'}}" color="#5B8C5A" />自定义</label>
+        </radio-group>
+        <view wx:if="{{item.schedule === 'custom'}}" class="custom-days">
+          <view class="custom-hint">点击选择目标日（已选 {{item.targetCount}} 天）</view>
+          <view class="target-weekdays">
+            <text wx:for="{{weekdays}}" wx:for-item="weekday" wx:key="*this">{{weekday}}</text>
+          </view>
+          <view class="target-grid">
+            <block wx:for="{{item.cells}}" wx:for-item="cell" wx:key="key">
+            <view wx:if="{{cell.empty}}" class="target-padding"></view>
+            <view wx:else
+              class="target-day {{cell.selected ? 'selected' : ''}}"
+              data-id="{{item.id}}" data-index="{{cell.index}}" bindtap="onToggleTargetDay">{{cell.label}}</view>
+            </block>
+          </view>
+        </view>
+      </view>
+    </checkbox-group>
+  </view>
+  <block wx:if="{{step === 3}}">
+    <view class="title">给生活加一点新体验</view>
+    <view class="description">可以选几件想做的事，也可以全部不选。任务日期以后再安排。</view>
+  </block>
+  <view hidden="{{step !== 3}}" class="card">
+    <checkbox-group bindchange="onTodosChange">
+      <label wx:for="{{suggestions}}" wx:key="*this" class="option"><checkbox value="{{item}}" color="#5B8C5A" />{{item}}</label>
+    </checkbox-group>
+  </view>
+  <view wx:if="{{step === 3}}" class="description">使用提示：点圆圈完成打卡；在日历回看记录；在今日页记录文字和心情，点击“保存”。数据保存在当前设备，可在“我的”中导出备份。</view>
+  <button wx:if="{{step < 3}}" class="btn" bindtap="onNext">下一步</button>
+  <button wx:else class="btn" loading="{{saving}}" disabled="{{saving}}" bindtap="onStart">开始我的21天</button>
+  <button wx:if="{{step > 1}}" class="btn ghost back" bindtap="onBack">上一步</button>
+</view>

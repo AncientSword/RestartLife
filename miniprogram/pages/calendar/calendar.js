@@ -28,7 +28,8 @@ Page({
     const cells = [];
     const startWk = store.weekdayOf(plan.start_date);
     const labels = ['一', '二', '三', '四', '五', '六', '日'];
-    const weekdays = labels.map((_, i) => labels[(startWk + i) % 7]);
+    const weekdays = labels;
+    for (let i = 0; i < startWk; i++) cells.push({ key: 'pad-' + i, empty: true });
 
     const curDay = store.currentDayNumber();
     for (let i = 1; i <= store.TOTAL_DAYS; i++) {
@@ -41,6 +42,7 @@ Page({
       else if (done > 0) cls = 'partial';
       if (i > curDay) cls += ' future';
       if (dt === store.todayStr()) cls += ' current';
+      if (i === 7 || i === 14) cls += ' week-boundary';
       const d = store.parseDate(dt);
       cells.push({
         key: 'd-' + i,

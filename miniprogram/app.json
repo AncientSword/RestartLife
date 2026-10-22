@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/onboarding/onboarding",
     "pages/today/today",
     "pages/tasks/tasks",
     "pages/todos/todos",

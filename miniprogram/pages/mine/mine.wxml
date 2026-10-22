@@ -78,6 +78,16 @@
     <view class="card-title">计划管理</view>
     <view class="plan-info">{{planInfo}}</view>
     <button class="btn danger" bindtap="onReset">重置 21 天计划</button>
+    <view wx:if="{{resetVisible}}" class="reset-options">
+      <view class="reset-hint">从今天重新开始 21 天，打卡记录和心得将清空。请选择要保留的内容：</view>
+      <checkbox-group bindchange="onResetOptions">
+        <label class="reset-option"><checkbox value="tasks" checked="{{keepTasks}}" color="#5B8C5A" />保留打卡项目及目标日设置</label>
+        <label class="reset-option"><checkbox value="todos" checked="{{keepTodos}}" color="#5B8C5A" />保留任务清单及完成状态</label>
+      </checkbox-group>
+      <view class="reset-hint">未勾选的内容将清空。保留项目的补打卡次数会恢复，目标日按新计划第 1～21 天沿用。</view>
+      <button class="btn danger" bindtap="onConfirmReset">确认重置</button>
+      <button class="btn ghost reset-cancel" bindtap="onCancelReset">取消</button>
+    </view>
   </view>
 
   <view class="card">

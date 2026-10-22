@@ -18,6 +18,9 @@ Page({
     todoPct: 0,
     importVisible: false,
     importText: '',
+    resetVisible: false,
+    keepTasks: true,
+    keepTodos: true,
   },
 
   onShow() { this.refresh(); },
@@ -84,16 +87,21 @@ Page({
   },
 
   onReset() {
-    wx.showModal({
-      title: '重置计划',
-      content: '重置后将从今天重新开始 21 天计划，所有打卡和心得会清空，确定吗？',
-      success: (r) => {
-        if (!r.confirm) return;
-        store.resetPlan();
-        this.refresh();
-        wx.showToast({ title: '已重置', icon: 'success' });
-      },
-    });
+    this.setData({ resetVisible: true, keepTasks: true, keepTodos: true });
+  },
+
+  onResetOptions(e) {
+    const values = e.detail.value;
+    this.setData({ keepTasks: values.includes('tasks'), keepTodos: values.includes('todos') });
+  },
+
+  onCancelReset() { this.setData({ resetVisible: false }); },
+
+  onConfirmReset() {
+    store.resetPlan({ keepTasks: this.data.keepTasks, keepTodos: this.data.keepTodos });
+    this.setData({ resetVisible: false });
+    this.refresh();
+    wx.showToast({ title: '已重置', icon: 'success' });
   },
 
   // 分享转发卡片：动态生成标题和描述

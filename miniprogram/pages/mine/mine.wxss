@@ -37,6 +37,10 @@
 .heat .h { aspect-ratio: 1; border-radius: 12rpx; background: #ECECE6; }
 
 .plan-info { font-size: 26rpx; color: var(--text-2); margin-bottom: 28rpx; }
+.reset-options { margin-top: 24rpx; }
+.reset-option { display: flex; align-items: center; padding: 16rpx 0; font-size: 26rpx; }
+.reset-hint { font-size: 24rpx; color: var(--text-2); margin-bottom: 20rpx; }
+.reset-cancel { margin-top: 16rpx; }
 
 .share-btn { margin-bottom: 20rpx; }
 .import-box { margin-top: 24rpx; }

@@ -24,6 +24,10 @@ Page({
   },
 
   onShow() {
+    if (!store.getState().onboardingCompleted) {
+      wx.reLaunch({ url: '/pages/onboarding/onboarding' });
+      return;
+    }
     this.refresh();
   },
 

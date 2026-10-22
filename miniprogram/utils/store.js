@@ -23,6 +23,9 @@ let state = null;
 function init() {
   state = load();
   state.todos = state.todos || [];
+  // 旧数据没有引导标记，视为已使用过，避免覆盖已有计划。
+  if (state.onboardingCompleted === undefined) state.onboardingCompleted = true;
+  save();
   return state;
 }
 
@@ -80,7 +83,9 @@ function load() {
   const today = todayStr();
   return {
     plan: { start_date: today, status: 'active' },
-    tasks: DEFAULT_TASKS,
+    tasks: [],
+    todos: [],
+    onboardingCompleted: false,
     checkins: {},
     notes: {},
     editingTaskId: null,
@@ -92,6 +97,17 @@ function save() {
 }
 
 function getState() { return state; }
+
+function completeOnboarding({ startDate, tasks, todos }) {
+  if (state.onboardingCompleted) return;
+  const previous = state;
+  state = {
+    plan: { start_date: startDate, status: 'active' },
+    tasks, todos, checkins: {}, notes: {}, editingTaskId: null,
+    onboardingCompleted: true,
+  };
+  try { save(); } catch (error) { state = previous; throw error; }
+}
 
 /* ----------------- 常量导出 ----------------- */
 function totalDays() { return TOTAL_DAYS; }
@@ -327,12 +343,13 @@ function deleteTask(id) {
   save();
 }
 
-function resetPlan() {
+function resetPlan({ keepTasks = true, keepTodos = true } = {}) {
   const t = todayStr();
   state.plan = { start_date: t, status: 'active' };
   state.checkins = {};
   state.notes = {};
-  // todos 保留：一次性任务独立于计划重置
+  state.tasks = keepTasks ? state.tasks.map(task => ({ ...task, makeupUsed: 0 })) : [];
+  if (!keepTodos) state.todos = [];
   save();
 }
 
@@ -404,7 +421,7 @@ module.exports = {
   // 常量
   TOTAL_DAYS, MAX_MAKEUPS, ICONS, COLORS,
   // 初始化
-  init, getState,
+  init, getState, completeOnboarding,
   // 日期
   todayStr, parseDate, addDays, diffDays, weekdayOf, fmtCN, fmtCNDay,
   // 计划

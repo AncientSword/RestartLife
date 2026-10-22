@@ -12,9 +12,9 @@
       <text wx:for="{{weekdays}}" wx:key="index" class="w">{{item}}</text>
     </view>
     <view class="cal-grid">
-      <view
-        wx:for="{{cells}}"
-        wx:key="key"
+      <block wx:for="{{cells}}" wx:key="key">
+      <view wx:if="{{item.empty}}"></view>
+      <view wx:else
         class="cal-cell {{item.cls}}"
         bindtap="onCellTap"
         data-date="{{item.date}}"
@@ -22,6 +22,7 @@
         <view class="num">{{item.num}}</view>
         <view class="dot"></view>
       </view>
+      </block>
     </view>
     <view class="cal-legend">
       <view class="lg"><view class="sw full"></view><text>全部完成</text></view>
