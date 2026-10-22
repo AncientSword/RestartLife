@@ -3,3 +3,4 @@ export * from './plan.entity';
 export * from './task.entity';
 export * from './checkin.entity';
 export * from './daily-note.entity';
+export * from './todo.entity';

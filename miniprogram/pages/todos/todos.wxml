@@ -1,0 +1,75 @@
+<!-- pages/todos/todos.wxml -->
+<view class="topbar">
+  <view>
+    <view class="h1">任务清单</view>
+    <view class="sub">勾掉即完成，可取消</view>
+  </view>
+</view>
+
+<view class="seg-row">
+  <view class="seg {{filter === 'pending' ? 'active' : ''}}" bindtap="onFilter" data-f="pending">未完成</view>
+  <view class="seg {{filter === 'done' ? 'active' : ''}}" bindtap="onFilter" data-f="done">已完成</view>
+  <view class="seg {{filter === 'all' ? 'active' : ''}}" bindtap="onFilter" data-f="all">全部</view>
+</view>
+
+<view class="page-wrap">
+  <view class="card">
+    <view wx:if="{{todos.length === 0}}" class="empty">{{emptyHint}}</view>
+    <view wx:for="{{todos}}" wx:key="id" class="todo-row {{item.done ? 'done' : ''}}">
+      <view class="todo-check" bindtap="onToggle" data-id="{{item.id}}"></view>
+      <view class="todo-body">
+        <view class="todo-title">{{item.title}}</view>
+        <view wx:if="{{item.note}}" class="todo-note">{{item.note}}</view>
+        <view wx:if="{{item.dueText}}" class="ck-sub {{item.overdue ? 'overdue' : ''}}">{{item.dueText}}</view>
+      </view>
+      <view class="ops">
+        <view class="op" bindtap="onEdit" data-id="{{item.id}}">✏️</view>
+        <view class="op" bindtap="onDelete" data-id="{{item.id}}">🗑️</view>
+      </view>
+    </view>
+    <button class="btn ghost add-btn" bindtap="onAdd">＋ 新建任务</button>
+  </view>
+</view>
+
+<!-- Todo 编辑弹层 -->
+<view wx:if="{{sheetVisible}}" class="mask" bindtap="onMaskTap" catchtouchmove="noop">
+  <view class="sheet" catchtap="noop">
+    <view class="sheet-title">{{sheetTitle}}</view>
+    <view class="field">
+      <view class="label">任务标题</view>
+      <input
+        class="input"
+        value="{{form.title}}"
+        bindinput="onTitleInput"
+        placeholder="如：写第一周总结"
+        placeholder-class="ph"
+        maxlength="40"
+        adjust-position="{{true}}"
+        cursor-spacing="20"
+        hold-keyboard="{{true}}" />
+    </view>
+    <view class="field">
+      <view class="label">备注（可选）</view>
+      <textarea
+        class="textarea"
+        fixed="{{true}}"
+        auto-height="{{false}}"
+        value="{{form.note}}"
+        bindinput="onNoteInput"
+        placeholder="补充说明…"
+        placeholder-class="ph"
+        maxlength="200"
+        adjust-position="{{true}}"
+        cursor-spacing="20"
+        hold-keyboard="{{true}}"></textarea>
+    </view>
+    <view class="field">
+      <view class="label">截止日期（可选）</view>
+      <picker mode="date" value="{{form.dueDate}}" start="{{dueMin}}" end="{{dueMax}}" bindchange="onDueChange">
+        <view class="picker-val">{{form.dueDate || '点击选择日期'}}</view>
+      </picker>
+      <view class="hint">截止日期须在今天到计划最后一天之间</view>
+    </view>
+    <button class="btn save-btn" bindtap="onSave">保存</button>
+  </view>
+</view>

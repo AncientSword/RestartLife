@@ -1,0 +1,72 @@
+{
+  "v": 4,
+  "plan": {
+    "start_date": "2026-10-17",
+    "status": "active"
+  },
+  "tasks": [
+    {
+      "id": "t1",
+      "name": "远离电子设备",
+      "icon": "📵",
+      "color": "#9B7EBD",
+      "is_default": true,
+      "sort": 0,
+      "frequencyType": "daily",
+      "targetDays": null,
+      "makeupUsed": 0
+    },
+    {
+      "id": "t2",
+      "name": "早睡",
+      "icon": "🌛",
+      "color": "#4A90A4",
+      "is_default": true,
+      "sort": 1,
+      "frequencyType": "daily",
+      "targetDays": null,
+      "makeupUsed": 0
+    },
+    {
+      "id": "t3",
+      "name": "早起",
+      "icon": "☀️",
+      "color": "#E8B04B",
+      "is_default": true,
+      "sort": 2,
+      "frequencyType": "daily",
+      "targetDays": null,
+      "makeupUsed": 0
+    },
+    {
+      "id": "t4",
+      "name": "运动",
+      "icon": "💪",
+      "color": "#D87171",
+      "is_default": true,
+      "sort": 3,
+      "frequencyType": "custom",
+      "targetDays": [true, true, false, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true],
+      "makeupUsed": 0
+    },
+    {
+      "id": "t5",
+      "name": "阅读",
+      "icon": "📒",
+      "color": "#5B8C5A",
+      "is_default": true,
+      "sort": 4,
+      "frequencyType": "custom",
+      "targetDays": [false, false, true, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false, true, false],
+      "makeupUsed": 0
+    }
+  ],
+  "checkins": {
+    "2026-10-17": { "t1": true, "t2": true, "t3": true, "t4": true },
+    "2026-10-18": { "t1": true, "t2": true, "t3": true, "t4": true },
+    "2026-10-19": { "t1": true, "t2": true, "t3": true, "t5": true },
+    "2026-10-20": { "t3": true }
+  },
+  "notes": {},
+  "todos": []
+}

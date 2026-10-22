@@ -1,0 +1,32 @@
+<!-- pages/tasks/tasks.wxml -->
+<view class="topbar">
+  <view>
+    <view class="h1">打卡项目</view>
+    <view class="sub">{{planInfo}}</view>
+  </view>
+</view>
+
+<view class="page-wrap">
+  <view class="card">
+    <view wx:if="{{tasks.length === 0}}" class="empty">还没有打卡项目</view>
+    <view wx:for="{{tasks}}" wx:key="id" class="task-row">
+      <view class="icon" style="background: {{item.colorBg}}; color: {{item.color}}">{{item.icon}}</view>
+      <view class="info">
+        <view class="name">{{item.name}}</view>
+        <view class="rate">{{item.freqText}} · 完成率 {{item.rateText}}{{item.extra}}</view>
+      </view>
+      <view class="ops">
+        <view class="op" bindtap="onEdit" data-id="{{item.id}}">✏️</view>
+        <view class="op" bindtap="onDelete" data-id="{{item.id}}">🗑️</view>
+      </view>
+    </view>
+    <button class="btn ghost add-btn" bindtap="onAdd">＋ 添加打卡项目</button>
+  </view>
+</view>
+
+<task-sheet
+  wx:if="{{sheetVisible}}"
+  editing-id="{{editingId}}"
+  bind:close="onSheetClose"
+  bind:saved="onSheetSaved">
+</task-sheet>

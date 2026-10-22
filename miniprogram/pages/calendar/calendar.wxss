@@ -1,0 +1,82 @@
+/* pages/calendar/calendar.wxss */
+.topbar { padding: 48rpx 32rpx 16rpx; }
+.topbar .h1 { font-size: 44rpx; font-weight: 700; }
+.topbar .sub { font-size: 26rpx; color: var(--text-2); margin-top: 8rpx; }
+
+.cal-week {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 16rpx; text-align: center;
+}
+.cal-week .w { font-size: 22rpx; color: var(--text-3); padding-bottom: 12rpx; }
+.cal-grid {
+  display: grid; grid-template-columns: repeat(7, 1fr);
+  gap: 16rpx; margin-top: 16rpx;
+}
+.cal-cell {
+  position: relative;
+  aspect-ratio: 1; border-radius: 20rpx;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: #F0F0EB; font-size: 24rpx; color: var(--text-2);
+}
+.cal-cell .num { font-size: 26rpx; font-weight: 600; }
+.cal-cell .dot { width: 10rpx; height: 10rpx; border-radius: 50%; background: var(--text-3); margin-top: 6rpx; }
+.cal-cell.full { background: var(--primary); color: #fff; }
+.cal-cell.full .dot { background: #fff; }
+.cal-cell.partial { background: #C5DEC2; color: var(--primary); }
+.cal-cell.partial .dot { background: var(--primary); }
+.cal-cell.future { opacity: 0.4; }
+.cal-cell.current { box-shadow: 0 0 0 4rpx var(--accent); }
+
+.cal-legend {
+  display: flex; gap: 32rpx; font-size: 24rpx; color: var(--text-2);
+  margin-top: 28rpx; flex-wrap: wrap;
+}
+.cal-legend .lg { display: flex; align-items: center; gap: 12rpx; }
+.cal-legend .sw { width: 24rpx; height: 24rpx; border-radius: 8rpx; }
+.cal-legend .sw.full { background: var(--primary); }
+.cal-legend .sw.partial { background: #C5DEC2; }
+.cal-legend .sw.none { background: #F0F0EB; }
+.cal-legend .sw.today { background: var(--accent); }
+
+.dd-head { margin-bottom: 28rpx; }
+.dd-day { font-size: 28rpx; color: var(--text-2); margin-bottom: 8rpx; }
+.dd-date { font-size: 34rpx; font-weight: 600; }
+.dd-mood { font-size: 32rpx; margin-bottom: 16rpx; }
+.todo-note { font-size: 24rpx; color: var(--text-2); margin-top: 8rpx; }
+
+.check-item {
+  display: flex; align-items: center; padding: 24rpx 16rpx;
+  border-radius: 16rpx;
+}
+.check-item + .check-item { border-top: 2rpx solid var(--line); border-radius: 0; }
+.check-item:first-child { border-top-left-radius: 16rpx; border-top-right-radius: 6rpx; }
+.check-item .icon {
+  width: 72rpx; height: 72rpx; border-radius: 20rpx;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36rpx; margin-right: 28rpx;
+}
+.check-item .name { flex: 1; font-size: 30rpx; }
+.ck-sub { font-size: 22rpx; color: var(--text-2); background: var(--bg); padding: 4rpx 16rpx; border-radius: 999rpx; }
+.ck-sub.met { background: var(--primary-light); color: var(--primary); }
+.check-item .check-box {
+  width: 52rpx; height: 52rpx; border-radius: 50%;
+  border: 4rpx solid var(--text-3);
+  display: flex; align-items: center; justify-content: center;
+}
+.check-item.done .check-box { background: var(--primary); border-color: var(--primary); }
+.check-item.done .check-box::after { content: "✓"; color: #fff; font-size: 30rpx; font-weight: 700; }
+.check-item.done .name { text-decoration: line-through; color: var(--text-2); }
+
+.ck-makeup {
+  font-size: 24rpx; padding: 8rpx 24rpx; border-radius: 999rpx;
+  border: 2rpx solid var(--primary); background: #fff; color: var(--primary);
+  margin-left: 16rpx; line-height: 1.2;
+}
+
+.ck-btn { display: flex; align-items: center; margin-left: 16rpx; }
+
+.dd-note {
+  background: var(--bg); border-radius: 16rpx; padding: 24rpx;
+  font-size: 28rpx; color: var(--text); min-height: 80rpx;
+}

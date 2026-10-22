@@ -2,7 +2,7 @@ import {
   Entity, PrimaryGeneratedColumn, Column, CreateDateColumn,
   OneToMany, Relation,
 } from 'typeorm';
-import { Plan, Task, CheckIn, DailyNote } from './index';
+import { Plan, Task, CheckIn, DailyNote, Todo } from './index';
 
 @Entity('users')
 export class User {
@@ -38,4 +38,7 @@ export class User {
 
   @OneToMany(() => DailyNote, (n) => n.user)
   notes: Relation<DailyNote>[];
+
+  @OneToMany(() => Todo, (t) => t.user)
+  todos: Relation<Todo>[];
 }

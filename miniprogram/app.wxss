@@ -1,0 +1,63 @@
+/* app.wxss - 全局样式 + 设计变量 */
+page {
+  --bg: #FAFAF7;
+  --card: #FFFFFF;
+  --primary: #5B8C5A;
+  --primary-light: #E8F0E7;
+  --primary-soft: #A8C9A6;
+  --accent: #E8B04B;
+  --accent-light: #FBF0D9;
+  --text: #2C2C2C;
+  --text-2: #8A8A8A;
+  --text-3: #B8B8B8;
+  --line: #EFEFEA;
+  --danger: #D87171;
+
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", "Helvetica Neue", Arial, sans-serif;
+  font-size: 30rpx;
+  line-height: 1.5;
+}
+
+view, text { box-sizing: border-box; }
+
+.page-wrap { padding: 40rpx 32rpx 160rpx; }
+
+.topbar {
+  padding: 48rpx 32rpx 16rpx;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.topbar h1 { font-size: 44rpx; font-weight: 700; }
+.topbar .sub { font-size: 26rpx; color: var(--text-2); margin-top: 8rpx; }
+.topbar .badge {
+  font-size: 24rpx; color: var(--primary); background: var(--primary-light);
+  padding: 12rpx 24rpx; border-radius: 999rpx; font-weight: 600;
+}
+
+.card {
+  background: var(--card); border-radius: 32rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0,0,0,0.06);
+  padding: 36rpx; margin-bottom: 28rpx;
+}
+.card-title { font-size: 28rpx; font-weight: 600; color: var(--text-2); margin-bottom: 28rpx; }
+
+.row { display: flex; align-items: center; }
+.between { justify-content: space-between; }
+
+.empty { text-align: center; color: var(--text-3); font-size: 26rpx; padding: 60rpx 0; }
+
+.btn {
+  display: block; width: 100%; border: none;
+  background: var(--primary); color: #fff; font-size: 32rpx;
+  font-weight: 600; padding: 28rpx; border-radius: 24rpx;
+  line-height: 1;
+}
+.btn::after { border: none; }
+.btn.ghost { background: var(--primary-light); color: var(--primary); }
+.btn.danger { background: #FBEAEA; color: var(--danger); }
+
+/* 兼容 iPhone X 系列底部 home indicator */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }

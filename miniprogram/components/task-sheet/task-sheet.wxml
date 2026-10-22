@@ -1,0 +1,77 @@
+<!-- components/task-sheet/task-sheet.wxml -->
+<view class="mask" bindtap="onMaskTap" catchtouchmove="noop"></view>
+  <view class="sheet" catchtap="noop">
+    <view class="sheet-title">{{titleText}}</view>
+    <scroll-view class="sheet-scroll" scroll-y="{{true}}">
+    <view class="field">
+      <view class="label">项目名称</view>
+      <input
+        class="input"
+        value="{{form.name}}"
+        bindinput="onNameInput"
+        placeholder="如：冥想 10 分钟"
+        placeholder-class="ph"
+        maxlength="12"
+        adjust-position="{{true}}"
+        cursor-spacing="20"
+        hold-keyboard="{{true}}" />
+    </view>
+
+    <view class="field">
+      <view class="label">选择图标</view>
+      <view class="icon-grid">
+        <view
+          wx:for="{{iconList}}"
+          wx:key="*this"
+          class="ig {{form.icon === item ? 'active' : ''}}"
+          bindtap="onIconPick"
+          data-icon="{{item}}">{{item}}</view>
+      </view>
+    </view>
+
+    <view class="field">
+      <view class="label">选择颜色</view>
+      <view class="color-grid">
+        <view
+          wx:for="{{colorList}}"
+          wx:key="*this"
+          class="cg {{form.color === item ? 'active' : ''}}"
+          style="background: {{item}};"
+          bindtap="onColorPick"
+          data-color="{{item}}"></view>
+      </view>
+    </view>
+
+    <view class="field">
+      <view class="label">打卡类型</view>
+      <view class="freq-row">
+        <view
+          class="freq-opt {{form.frequencyType === 'daily' ? 'active' : ''}}"
+          bindtap="onFreqChange"
+          data-val="daily">每天打卡</view>
+        <view
+          class="freq-opt {{form.frequencyType === 'custom' ? 'active' : ''}}"
+          bindtap="onFreqChange"
+          data-val="custom">自由选择</view>
+    </view>
+
+      <view wx:if="{{form.frequencyType === 'custom'}}" class="custom-box">
+        <view class="custom-hint">点击下方 21 天日历选择目标日，<text class="strong">历史日期不可改</text></view>
+        <view class="td-week">
+          <text>一</text><text>二</text><text>三</text><text>四</text><text>五</text><text>六</text><text>日</text>
+        </view>
+        <view class="td-grid">
+          <view
+            wx:for="{{tdCells}}"
+            wx:key="key"
+            class="td-cell {{item.selected ? 'selected' : ''}} {{item.locked ? 'locked' : ''}} {{item.isToday ? 'today' : ''}}"
+            bindtap="onToggleDay"
+            data-idx="{{item.idx}}">{{item.num}}</view>
+        </view>
+        <view class="td-count">已选 <text class="strong">{{tdCount}}</text> / 21 天 · 灰色为历史锁定</view>
+      </view>
+    </view>
+
+    </scroll-view>
+    <button class="btn save-btn" bindtap="onSave">保存</button>
+  </view>

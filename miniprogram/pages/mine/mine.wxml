@@ -1,0 +1,98 @@
+<!-- pages/mine/mine.wxml -->
+<view class="topbar">
+  <view>
+    <view class="h1">我的</view>
+    <view class="sub">{{subText}}</view>
+  </view>
+</view>
+
+<view class="page-wrap">
+  <view class="card">
+    <view class="stat-big">
+      <view class="ring">
+        <view class="ring-bg" style="background: conic-gradient(var(--primary) {{ringDeg}}deg, #EFEFEA 0deg);"></view>
+        <view class="ring-inner">
+          <view class="pct">{{pct}}%</view>
+          <view class="pct-sub">总体完成率</view>
+        </view>
+      </view>
+    </view>
+    <view class="stat-mini">
+      <view class="cell">
+        <view class="n">{{streak}}</view>
+        <view class="l">连续打卡天数</view>
+      </view>
+      <view class="cell">
+        <view class="n">{{totalDoneDays}}</view>
+        <view class="l">累计完成天数</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">各项目完成率</view>
+    <view wx:for="{{bars}}" wx:key="id" class="bar-row">
+      <view class="top">
+        <text>{{item.icon}} {{item.name}}</text>
+        <text>{{item.pctText}}</text>
+      </view>
+      <view class="track">
+        <view class="fill" style="width: {{item.width}}%; background: {{item.color}};"></view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">任务进度</view>
+    <view class="todo-head">
+      <view class="big"><text class="big-num">{{todoDone}}</text><text class="muted"> / {{todoTotal}} 已完成</text></view>
+      <view class="muted">{{todoPct}}%</view>
+    </view>
+    <view class="track">
+      <view class="fill accent" style="width: {{todoPct}}%;"></view>
+    </view>
+    <view class="stat-mini">
+      <view class="cell">
+        <view class="n">{{todoPending}}</view>
+        <view class="l">待完成</view>
+      </view>
+      <view class="cell">
+        <view class="n danger">{{todoOverdue}}</view>
+        <view class="l">已逾期</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">21 天热力图</view>
+    <view class="heat">
+      <view
+        wx:for="{{heat}}"
+        wx:key="index"
+        class="h"
+        style="background: {{item.bg}};"></view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="card-title">计划管理</view>
+    <view class="plan-info">{{planInfo}}</view>
+    <button class="btn danger" bindtap="onReset">重置 21 天计划</button>
+  </view>
+
+  <view class="card">
+    <view class="card-title">分享与备份</view>
+    <button class="btn ghost share-btn" open-type="share">分享我的进度</button>
+    <button class="btn ghost share-btn" bindtap="onExport">导出数据到剪贴板</button>
+    <button class="btn ghost share-btn" bindtap="onImportTap">从剪贴板导入数据</button>
+    <view wx:if="{{importVisible}}" class="import-box">
+      <textarea
+        class="import-input"
+        placeholder="粘贴导出的 JSON 数据…"
+        value="{{importText}}"
+        bindinput="onImportInput"
+        maxlength="-1"></textarea>
+      <button class="btn" bindtap="onImport">确认导入（覆盖现有）</button>
+    </view>
+  </view>
+</view>

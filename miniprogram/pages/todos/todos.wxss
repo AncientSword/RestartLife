@@ -1,0 +1,86 @@
+/* pages/todos/todos.wxss */
+.topbar { padding: 48rpx 32rpx 16rpx; display: flex; align-items: flex-end; justify-content: space-between; }
+.topbar .h1 { font-size: 44rpx; font-weight: 700; }
+.topbar .sub { font-size: 26rpx; color: var(--text-2); margin-top: 8rpx; }
+.toggle-badge {
+  font-size: 24rpx; color: var(--primary); background: var(--primary-light);
+  padding: 12rpx 24rpx; border-radius: 999rpx; font-weight: 600;
+}
+
+/* Segment 筛选 */
+.seg-row {
+  display: flex; background: var(--card); border-radius: 24rpx;
+  padding: 8rpx; margin: 0 32rpx 24rpx;
+  box-shadow: 0 4rpx 24rpx rgba(0,0,0,0.06);
+}
+.seg {
+  flex: 1; font-size: 26rpx; color: var(--text-2);
+  padding: 16rpx 0; border-radius: 18rpx; text-align: center;
+  transition: all 0.15s;
+}
+.seg.active { background: var(--primary); color: #fff; font-weight: 600; }
+
+.todo-row {
+  display: flex; align-items: flex-start;
+  padding: 28rpx 24rpx; border-radius: 24rpx;
+  background: var(--bg); margin-bottom: 20rpx;
+}
+.todo-check {
+  width: 48rpx; height: 48rpx; border-radius: 50%;
+  border: 4rpx solid var(--text-3);
+  margin-right: 28rpx; flex-shrink: 0;
+  margin-top: 4rpx;
+  display: flex; align-items: center; justify-content: center;
+}
+.todo-row.done .todo-check { background: var(--primary); border-color: var(--primary); }
+.todo-row.done .todo-check::after { content: "✓"; color: #fff; font-size: 28rpx; font-weight: 700; }
+.todo-body { flex: 1; }
+.todo-title { font-size: 30rpx; font-weight: 500; }
+.todo-row.done .todo-title { color: var(--text-2); text-decoration: line-through; }
+.todo-note { font-size: 26rpx; color: var(--text-2); margin-top: 8rpx; }
+.ck-sub { display: inline-block; font-size: 22rpx; color: var(--text-2); background: var(--bg); padding: 4rpx 16rpx; border-radius: 999rpx; margin-top: 12rpx; }
+.ck-sub.overdue { background: #FBEAEA; color: var(--danger); }
+
+.ops { display: flex; gap: 16rpx; }
+.op {
+  width: 60rpx; height: 60rpx; border-radius: 16rpx;
+  background: #fff; font-size: 28rpx;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.add-btn { margin-top: 28rpx; }
+
+/* Todo 编辑弹层 */
+.mask {
+  position: fixed; left: 0; right: 0; top: 0; bottom: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 100;
+}
+.sheet {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  background: #fff; width: 100%;
+  border-radius: 40rpx 40rpx 0 0;
+  padding: 40rpx 36rpx;
+  padding-bottom: calc(40rpx + env(safe-area-inset-bottom));
+  z-index: 101;
+}
+.sheet-title { font-size: 34rpx; font-weight: 600; text-align: center; margin-bottom: 32rpx; }
+.field { margin-bottom: 28rpx; }
+.label { font-size: 26rpx; color: var(--text-2); margin-bottom: 12rpx; }
+.input {
+  width: 100%; border: 2rpx solid var(--line); border-radius: 20rpx;
+  padding: 24rpx; font-size: 30rpx; box-sizing: border-box;
+  height: 88rpx; min-height: 88rpx;
+}
+.ph { color: var(--text-3); }
+.textarea {
+  width: 100%; height: 168rpx; padding: 24rpx;
+  border: 2rpx solid var(--line); border-radius: 20rpx;
+  font-size: 28rpx; line-height: 1.6; box-sizing: border-box;
+}
+.picker-val {
+  padding: 24rpx; border: 2rpx solid var(--line); border-radius: 20rpx;
+  font-size: 30rpx; color: var(--text-2);
+}
+.hint { font-size: 22rpx; color: var(--text-3); margin-top: 8rpx; }
+.save-btn { margin-top: 16rpx; }

@@ -1,0 +1,91 @@
+/* pages/today/today.wxss */
+.topbar { padding: 48rpx 32rpx 16rpx; display: flex; align-items: flex-end; justify-content: space-between; }
+.topbar .h1 { font-size: 44rpx; font-weight: 700; }
+.topbar .sub { font-size: 26rpx; color: var(--text-2); margin-top: 8rpx; }
+.topbar .badge {
+  font-size: 24rpx; color: var(--primary); background: var(--primary-light);
+  padding: 12rpx 24rpx; border-radius: 999rpx; font-weight: 600;
+}
+
+.ring-wrap { display: flex; align-items: center; gap: 36rpx; }
+.ring { position: relative; width: 176rpx; height: 176rpx; }
+.ring-bg {
+  position: absolute; inset: 0; border-radius: 50%;
+  transition: background 0.5s;
+}
+.ring-inner {
+  position: absolute; inset: 16rpx; border-radius: 50%; background: var(--card);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.pct { font-size: 44rpx; font-weight: 700; color: var(--primary); }
+.pct-sub { font-size: 22rpx; color: var(--text-2); }
+.ring-info .big { font-size: 40rpx; font-weight: 700; }
+.ring-info .small { font-size: 26rpx; color: var(--text-2); margin-top: 8rpx; }
+
+.day-dots { display: flex; flex-wrap: wrap; gap: 12rpx; margin-top: 28rpx; }
+.day-dot {
+  width: 20rpx; height: 20rpx; border-radius: 50%;
+  background: #E5E5E0; transition: all 0.2s;
+}
+.day-dot.done { background: var(--primary); }
+.day-dot.current { background: var(--accent); transform: scale(1.4); box-shadow: 0 0 0 6rpx var(--accent-light); }
+
+.check-item {
+  display: flex; align-items: center; padding: 28rpx 24rpx;
+  border-radius: 24rpx;
+}
+.check-item + .check-item { border-top: 2rpx solid var(--line); border-radius: 0; }
+.check-item:first-child { border-top-left-radius: 24rpx; border-top-right-radius: 24rpx; }
+.check-item .icon {
+  width: 72rpx; height: 72rpx; border-radius: 20rpx;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36rpx; margin-right: 28rpx;
+}
+.check-item .name { flex: 1; font-size: 32rpx; }
+.check-item .check-box {
+  width: 52rpx; height: 52rpx; border-radius: 50%;
+  border: 4rpx solid var(--text-3);
+  display: flex; align-items: center; justify-content: center;
+}
+.check-item.done .check-box { background: var(--primary); border-color: var(--primary); }
+.check-item.done .check-box::after { content: "✓"; color: #fff; font-size: 30rpx; font-weight: 700; }
+.check-item.done .name { color: var(--text-2); text-decoration: line-through; }
+
+.note {
+  width: 100%; min-height: 168rpx; padding: 24rpx;
+  background: var(--bg); border-radius: 24rpx;
+  font-size: 28rpx; line-height: 1.6; box-sizing: border-box;
+}
+.ph { color: var(--text-3); }
+
+.mood-row { display: flex; gap: 32rpx; padding: 16rpx 8rpx 0; }
+.mood {
+  font-size: 48rpx; filter: grayscale(1); opacity: 0.5;
+  transition: all 0.15s;
+}
+.mood.active { filter: none; opacity: 1; transform: scale(1.2); }
+.note-save { margin-top: 24rpx; }
+
+/* 近期任务卡 - 与 todos 页风格一致 */
+.row.between { display: flex; align-items: center; justify-content: space-between; }
+.link { font-size: 24rpx; color: var(--primary); }
+.todo-row {
+  display: flex; align-items: flex-start;
+  padding: 24rpx 16rpx; border-radius: 16rpx;
+  background: var(--bg); margin-bottom: 16rpx;
+}
+.todo-check {
+  width: 48rpx; height: 48rpx; border-radius: 50%;
+  border: 4rpx solid var(--text-3);
+  margin-right: 24rpx; flex-shrink: 0; margin-top: 4rpx;
+  display: flex; align-items: center; justify-content: center;
+}
+.todo-row.done .todo-check { background: var(--primary); border-color: var(--primary); }
+.todo-body { flex: 1; }
+.todo-title { font-size: 30rpx; font-weight: 500; }
+.ck-sub {
+  display: inline-block; font-size: 22rpx; color: var(--text-2);
+  background: var(--card); padding: 4rpx 16rpx; border-radius: 999rpx;
+  margin-top: 12rpx;
+}
+.ck-sub.overdue { background: #FBEAEA; color: var(--danger); }

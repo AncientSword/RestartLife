@@ -171,6 +171,10 @@
   .bar-row .fill { height: 100%; background: var(--primary); border-radius: 999px; transition: width .4s; }
   .heat { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
   .heat .h { aspect-ratio: 1; border-radius: 6px; background: #ECECE6; }
+  .big-num { font-size: 28px; font-weight: 700; color: var(--accent); }
+  .muted { font-size: 13px; color: var(--text-2); }
+  .track { height: 10px; background: var(--bg); border-radius: 999px; overflow: hidden; }
+  .fill { height: 100%; border-radius: 999px; transition: width .4s; }
 
   /* Tasks */
   .task-row {
@@ -184,20 +188,53 @@
   .task-row .ops { display: flex; gap: 8px; }
   .task-row .op { width: 30px; height: 30px; border-radius: 8px; border: none; background: #fff; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 
+  /* Todo */
+  .todo-row {
+    display: flex; align-items: flex-start; padding: 14px 12px;
+    border-radius: 12px; background: var(--bg); margin-bottom: 10px;
+  }
+  .todo-check {
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 2px solid var(--text-3); margin-right: 14px;
+    flex-shrink: 0; cursor: pointer; margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .todo-row.done .todo-check { background: var(--primary); border-color: var(--primary); }
+  .todo-row.done .todo-check::after { content: "✓"; color: #fff; font-size: 14px; font-weight: 700; }
+  .todo-body { flex: 1; }
+  .todo-title { font-size: 15px; font-weight: 500; }
+  .todo-row.done .todo-title { color: var(--text-2); text-decoration: line-through; }
+  .todo-note { font-size: 13px; color: var(--text-2); margin-top: 4px; }
+  .ck-sub.overdue { background: #FBEAEA; color: var(--danger); }
+  .badge { cursor: pointer; }
+  .link { font-size: 12px; color: var(--primary); cursor: pointer; }
+
+  /* Segment 筛选 */
+  .seg-row {
+    display: flex; background: var(--card); border-radius: 12px;
+    padding: 4px; margin: 0 16px 14px; box-shadow: var(--shadow);
+  }
+  .seg {
+    flex: 1; border: none; background: none; cursor: pointer;
+    font-family: inherit; font-size: 13px; color: var(--text-2);
+    padding: 8px 0; border-radius: 9px; transition: all .15s;
+  }
+  .seg.active { background: var(--primary); color: #fff; font-weight: 600; }
+
   /* Tab bar */
   .tabbar {
     position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
     width: 100%; max-width: 480px; background: #fff;
     border-top: 1px solid var(--line); display: grid;
-    grid-template-columns: repeat(4, 1fr); padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+    grid-template-columns: repeat(5, 1fr); padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
     z-index: 50;
   }
   .tab {
     display: flex; flex-direction: column; align-items: center;
-    gap: 2px; cursor: pointer; color: var(--text-3); font-size: 11px;
+    gap: 2px; cursor: pointer; color: var(--text-3); font-size: 10px;
     border: none; background: none; font-family: inherit;
   }
-  .tab .ic { font-size: 20px; }
+  .tab .ic { font-size: 18px; }
   .tab.active { color: var(--primary); }
 
   /* Modal */
@@ -213,6 +250,12 @@
   }
   @keyframes up { from { transform: translateY(100%); } to { transform: none; } }
   .sheet h3 { font-size: 17px; margin-bottom: 16px; text-align: center; }
+  #task-mask .sheet {
+    max-height: 90vh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
   .field { margin-bottom: 14px; }
   .field label { display: block; font-size: 13px; color: var(--text-2); margin-bottom: 6px; }
   .field input, .field textarea {
@@ -330,6 +373,14 @@
     </div>
 
     <div class="card">
+      <div class="card-title row between">
+        <span>未完成任务</span>
+        <span class="link" onclick="switchTab('todos')">看全部 →</span>
+      </div>
+      <div id="upcoming-todos"></div>
+    </div>
+
+    <div class="card">
       <div class="card-title">今日心得</div>
       <textarea class="note" id="note-input" placeholder="今天感觉怎么样？写下一点感受…" oninput="onNoteInput(this.value)"></textarea>
       <div class="mood-row" id="mood-row">
@@ -339,6 +390,7 @@
         <span class="mood" data-mood="sad" onclick="setMood('sad')">😢</span>
         <span class="mood" data-mood="fire" onclick="setMood('fire')">🔥</span>
       </div>
+      <button class="btn" style="margin-top:12px" onclick="saveNote()">保存</button>
     </div>
   </section>
 
@@ -369,10 +421,10 @@
     </div>
   </section>
 
-  <!-- ============ 统计页 ============ -->
-  <section class="page" id="page-stats">
+  <!-- ============ 我的页 ============ -->
+  <section class="page" id="page-mine">
     <div class="topbar">
-      <div><h1>进度统计</h1><div class="sub" id="stats-sub">—</div></div>
+      <div><h1>我的</h1><div class="sub" id="stats-sub">—</div></div>
     </div>
     <div class="card">
       <div class="stat-big">
@@ -398,8 +450,33 @@
       <div id="bars"></div>
     </div>
     <div class="card">
+      <div class="card-title">任务进度</div>
+      <div class="row between" style="align-items:baseline;margin-bottom:10px">
+        <div><span id="todo-done" class="big-num">0</span><span class="muted">/ <span id="todo-total">0</span> 已完成</span></div>
+        <div class="muted" id="todo-pct">0%</div>
+      </div>
+      <div class="track"><div class="fill" id="todo-fill" style="width:0%;background:var(--accent)"></div></div>
+      <div class="stat-mini" style="margin-top:14px">
+        <div class="cell"><div class="n" id="todo-pending">0</div><div class="l">待完成</div></div>
+        <div class="cell"><div class="n" id="todo-overdue">0</div><div class="l">已逾期</div></div>
+      </div>
+    </div>
+    <div class="card">
       <div class="card-title">21 天热力图</div>
       <div class="heat" id="heat"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">计划管理</div>
+      <div style="font-size:13px;color:var(--text-2);margin-bottom:14px" id="plan-info">—</div>
+      <button class="btn danger" onclick="resetPlan()">重置 21 天计划</button>
+    </div>
+    <div class="card">
+      <div class="card-title">分享与备份</div>
+      <button class="btn ghost" style="margin-bottom:10px" onclick="shareProgress()">分享我的进度</button>
+      <button class="btn ghost" style="margin-bottom:10px" onclick="exportData()">导出数据到剪贴板</button>
+      <button class="btn ghost" onclick="showImportBox()">从剪贴板导入数据</button>
+      <textarea id="import-box" class="note" style="display:none;margin-top:10px;min-height:120px" placeholder="粘贴导出的 JSON 数据…"></textarea>
+      <button id="import-btn" class="btn" style="display:none;margin-top:10px" onclick="doImport()">确认导入（覆盖现有）</button>
     </div>
   </section>
 
@@ -412,10 +489,21 @@
       <div id="task-list"></div>
       <button class="btn ghost" style="margin-top:14px" onclick="openTaskSheet()">＋ 添加打卡项目</button>
     </div>
+  </section>
+
+  <!-- ============ 任务页 ============ -->
+  <section class="page" id="page-todos">
+    <div class="topbar between">
+      <div><h1>任务清单</h1><div class="sub" id="todos-sub">勾掉即完成，可取消</div></div>
+    </div>
+    <div class="seg-row" id="todo-seg">
+      <button class="seg" data-f="pending" onclick="setTodoFilter('pending')">未完成</button>
+      <button class="seg" data-f="done" onclick="setTodoFilter('done')">已完成</button>
+      <button class="seg" data-f="all" onclick="setTodoFilter('all')">全部</button>
+    </div>
     <div class="card">
-      <div class="card-title">计划管理</div>
-      <div style="font-size:13px;color:var(--text-2);margin-bottom:14px" id="plan-info">—</div>
-      <button class="btn danger" onclick="resetPlan()">重置 21 天计划</button>
+      <div id="todo-list"></div>
+      <button class="btn ghost" style="margin-top:14px" onclick="openTodoSheet()">＋ 新建任务</button>
     </div>
   </section>
 
@@ -424,9 +512,10 @@
 <!-- Tab bar -->
 <nav class="tabbar">
   <button class="tab active" data-tab="today" onclick="switchTab('today')"><span class="ic">✅</span>今日</button>
-  <button class="tab" data-tab="cal" onclick="switchTab('cal')"><span class="ic">📅</span>日历</button>
-  <button class="tab" data-tab="stats" onclick="switchTab('stats')"><span class="ic">📊</span>统计</button>
   <button class="tab" data-tab="tasks" onclick="switchTab('tasks')"><span class="ic">⚙️</span>项目</button>
+  <button class="tab" data-tab="todos" onclick="switchTab('todos')"><span class="ic">📝</span>任务</button>
+  <button class="tab" data-tab="cal" onclick="switchTab('cal')"><span class="ic">📅</span>日历</button>
+  <button class="tab" data-tab="mine" onclick="switchTab('mine')"><span class="ic">👤</span>我的</button>
 </nav>
 
 <!-- Task sheet -->
@@ -481,8 +570,31 @@
     <div class="d-date" id="dd-date">—</div>
     <div class="card-title">打卡详情</div>
     <div id="dd-list"></div>
+    <div id="dd-todos"></div>
     <div class="card-title" style="margin-top:14px">心得</div>
+    <div id="dd-mood" style="font-size:16px;margin-bottom:8px"></div>
     <div class="card" style="background:var(--bg);box-shadow:none;margin:0;padding:12px;font-size:14px;color:var(--text);min-height:50px" id="dd-note">这一天没有心得记录</div>
+  </div>
+</div>
+
+<!-- Todo sheet -->
+<div class="mask" id="todo-mask" onclick="if(event.target===this)closeTodoSheet()">
+  <div class="sheet">
+    <h3 id="todo-sheet-title">新建任务</h3>
+    <div class="field">
+      <label>任务标题</label>
+      <input id="todo-title" placeholder="如：写第一周总结" maxlength="40" />
+    </div>
+    <div class="field">
+      <label>备注（可选）</label>
+      <textarea id="todo-note" placeholder="补充说明…" maxlength="200" rows="3" style="width:100%;resize:none;font-family:inherit;font-size:15px;padding:12px;border:1px solid var(--line);border-radius:10px;outline:none"></textarea>
+    </div>
+    <div class="field">
+      <label>截止日期（可选）</label>
+      <input id="todo-due" type="date" />
+      <div style="font-size:11px;color:var(--text-3);margin-top:4px">截止日期须在今天到计划最后一天之间</div>
+    </div>
+    <button class="btn" onclick="saveTodo()">保存</button>
   </div>
 </div>
 
@@ -528,63 +640,51 @@ const DEFAULT_TASKS = [
 let state = load();
 
 function load() {
-  // v2 → v3 迁移：weekly → custom，删除 frequencyTarget
-  const oldV2 = localStorage.getItem('restart_life_v2');
-  if (oldV2 && !localStorage.getItem(STORAGE_KEY)) {
-    try {
-      const v2 = JSON.parse(oldV2);
-      const migrated = {
-        plan: v2.plan || { start_date: todayStr(), status: 'active' },
-        tasks: (v2.tasks || []).map(t => ({
-          id: t.id, name: t.name, icon: t.icon, color: t.color,
-          is_default: t.is_default, sort: t.sort,
-          frequencyType: t.frequencyType === 'weekly' ? 'custom' : 'daily',
-          targetDays: t.frequencyType === 'weekly'
-            ? Array(TOTAL_DAYS).fill(false).map((_, i) => i % 7 < t.frequencyTarget) // 粗略映射
-            : null,
-          makeupUsed: 0,
-        })),
-        checkins: v2.checkins || {},
-        notes: v2.notes || {},
-        editingTaskId: null,
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
-    } catch(e) {
-      console.warn('迁移 v2 失败', e);
+  // v1/v2/v3 -> v4 兼容：统一增加 todos 数组
+  ['restart_life_v3', 'restart_life_v2', 'restart_life_v1'].forEach(k => {
+    const old = localStorage.getItem(k);
+    if (old && !localStorage.getItem(STORAGE_KEY)) {
+      try {
+        const s = JSON.parse(old);
+        if (k === 'restart_life_v1') {
+          s.tasks = (s.tasks || []).map(t => ({ ...t, frequencyType: 'daily', targetDays: null, makeupUsed: 0 }));
+        } else if (k === 'restart_life_v2') {
+          s.tasks = (s.tasks || []).map(t => {
+            if (t.frequencyType === 'weekly') {
+              return {
+                id: t.id, name: t.name, icon: t.icon, color: t.color,
+                is_default: t.is_default, sort: t.sort,
+                frequencyType: 'custom',
+                targetDays: Array(TOTAL_DAYS).fill(false).map((_, i) => i % 7 < t.frequencyTarget),
+                makeupUsed: 0,
+              };
+            }
+            return { ...t, makeupUsed: 0 };
+          });
+        }
+        s.todos = s.todos || [];
+        s.editingTaskId = null;
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(s));
+      } catch(e) {
+        console.warn('迁移 ' + k + ' 失败', e);
+      }
     }
-  }
-  // v1 → v3 也兼容一下
-  const oldV1 = localStorage.getItem('restart_life_v1');
-  if (oldV1 && !localStorage.getItem(STORAGE_KEY)) {
-    try {
-      const v1 = JSON.parse(oldV1);
-      const migrated = {
-        plan: v1.plan || { start_date: todayStr(), status: 'active' },
-        tasks: (v1.tasks || []).map(t => ({
-          ...t,
-          frequencyType: 'daily',
-          targetDays: null,
-          makeupUsed: 0,
-        })),
-        checkins: v1.checkins || {},
-        notes: v1.notes || {},
-        editingTaskId: null,
-      };
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(migrated));
-    } catch(e) {
-      console.warn('迁移 v1 失败', e);
-    }
-  }
+  });
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const s = JSON.parse(raw);
+      if (!s.todos) s.todos = [];
+      return s;
+    }
   } catch(e) {}
   const today = todayStr();
   return {
     plan: { start_date: today, status: 'active' },
     tasks: DEFAULT_TASKS,
-    checkins: {}, // { 'YYYY-MM-DD': { taskId: true } }
-    notes: {},    // { 'YYYY-MM-DD': { content, mood } }
+    checkins: {},
+    notes: {},
+    todos: [],
     editingTaskId: null,
   };
 }
@@ -818,6 +918,49 @@ function renderToday() {
     div.onclick = () => toggleCheck(t.id);
     list.appendChild(div);
   });
+
+  // 未完成任务
+  renderUpcomingTodos();
+}
+
+// 今日页：未完成任务（按截止日期升序，最近截止在前，已逾期最优先）
+function renderUpcomingTodos() {
+  const today = todayStr();
+  const list = document.getElementById('upcoming-todos');
+  list.innerHTML = '';
+  const todos = state.todos
+    .filter(t => !t.completedAt && t.dueDate)
+    .map(t => ({ t, days: diffDays(t.dueDate, today) }))
+    .sort((a, b) => a.days - b.days);  // 升序：已逾期(days<0)在前，最近截止在前
+  if (todos.length === 0) {
+    list.innerHTML = '<div class="empty">没有未完成的截止任务</div>';
+    return;
+  }
+  todos.forEach(({ t, days }) => {
+    let badge;
+    if (days < 0) badge = `<span class="ck-sub overdue">已逾期 ${-days} 天</span>`;
+    else if (days === 0) badge = `<span class="ck-sub overdue">今天截止</span>`;
+    else if (days === 1) badge = `<span class="ck-sub">明天截止</span>`;
+    else badge = `<span class="ck-sub">${days} 天后截止</span>`;
+    const row = document.createElement('div');
+    row.className = 'todo-row';
+    row.innerHTML = `
+      <div class="todo-check" onclick="quickToggleTodo('${t.id}')"></div>
+      <div class="todo-body">
+        <div class="todo-title">${t.title}</div>
+        ${badge}
+      </div>`;
+    list.appendChild(row);
+  });
+}
+
+function quickToggleTodo(id) {
+  const t = state.todos.find(x => x.id === id);
+  if (!t) return;
+  t.completedAt = new Date().toISOString();
+  save();
+  renderUpcomingTodos();
+  toast('已完成！');
 }
 
 function toggleCheck(taskId) {
@@ -841,6 +984,10 @@ function onNoteInput(v) {
   state.notes[todayStr()].content = v;
   save();
 }
+function saveNote() {
+  onNoteInput(document.getElementById('note-input').value);
+  toast('心得已保存');
+}
 function setMood(m) {
   if (!state.notes[todayStr()]) state.notes[todayStr()] = { content: '', mood: '' };
   state.notes[todayStr()].mood = m;
@@ -858,10 +1005,10 @@ function renderCal() {
   const grid = document.getElementById('cal-grid');
   grid.innerHTML = '';
   const startWk = weekdayOf(state.plan.start_date);
-  // 前置空格
-  for (let i = 0; i < startWk; i++) {
-    const e = document.createElement('div'); grid.appendChild(e);
-  }
+  const labels = ['一', '二', '三', '四', '五', '六', '日'];
+  document.querySelectorAll('#page-cal .cal-week .w').forEach((el, i) => {
+    el.textContent = labels[(startWk + i) % 7];
+  });
   const curDay = currentDayNumber();
   for (let i = 1; i <= TOTAL_DAYS; i++) {
     const dt = addDays(state.plan.start_date, i - 1);
@@ -894,23 +1041,20 @@ function openDayDrawer(date, dayNum) {
   const cks = getCheckinsOfDate(date);
   const list = document.getElementById('dd-list');
   list.innerHTML = '';
-  const tasks = activeTasks();
+  const tasks = activeTasks().filter(t => isTargetDay(t, date));
   if (tasks.length === 0) {
-    list.innerHTML = '<div class="empty">无打卡项目</div>';
+    list.innerHTML = '<div class="empty">当天没有目标日项目</div>';
   } else {
     const isHist = isHistorical(date);
     tasks.forEach(t => {
       const ok = !!cks[t.id];
-      const isTarget = isTargetDay(t, date);
       const row = document.createElement('div');
       row.className = 'check-item' + (ok ? ' done' : '');
       row.style.cursor = 'default';
 
       // 状态标签
       let sub = '';
-      if (!isTarget) {
-        sub = '<span class="ck-sub">非目标日</span>';
-      } else if (ok) {
+      if (ok) {
         sub = '<span class="ck-sub met">已打卡</span>';
       } else if (isHist) {
         // 历史目标日漏打：可补打卡
@@ -931,7 +1075,37 @@ function openDayDrawer(date, dayNum) {
       list.appendChild(row);
     });
   }
+  const todoList = document.getElementById('dd-todos');
+  todoList.innerHTML = '';
+  const completedTodos = (state.todos || []).filter(t => {
+    if (!t.completedAt) return false;
+    const completed = new Date(t.completedAt);
+    return !Number.isNaN(completed.getTime()) && dateStr(completed) === date;
+  });
+  if (completedTodos.length > 0) {
+    const heading = document.createElement('div');
+    heading.className = 'card-title';
+    heading.style.marginTop = '14px';
+    heading.textContent = '当日完成的任务';
+    todoList.appendChild(heading);
+    completedTodos.forEach(t => {
+      const row = document.createElement('div');
+      row.className = 'check-item done';
+      const name = document.createElement('div');
+      name.className = 'name';
+      name.textContent = t.title;
+      row.appendChild(name);
+      const check = document.createElement('div');
+      check.className = 'check-box';
+      row.appendChild(check);
+      todoList.appendChild(row);
+    });
+  }
   const note = state.notes[date];
+  const mood = note ? ({ happy: '😊', ok: '😐', tired: '😴', sad: '😢', fire: '🔥' }[note.mood] || '') : '';
+  const moodElement = document.getElementById('dd-mood');
+  moodElement.textContent = mood;
+  moodElement.style.display = mood ? 'block' : 'none';
   document.getElementById('dd-note').textContent = (note && note.content) ? note.content : '这一天没有心得记录';
   document.getElementById('day-mask').classList.add('show');
 }
@@ -959,6 +1133,9 @@ function doMakeup(taskId, date) {
 /* ---- 统计页 ---- */
 function renderStats() {
   const o = overallRate();
+  // 计划信息（移到"我的"页后这里负责渲染）
+  const pi = document.getElementById('plan-info');
+  if (pi) pi.textContent = `开始于 ${fmtCN(state.plan.start_date)}，结束于 ${fmtCN(planEndDate())}`;
   const C = 2 * Math.PI * 52;
   const ring = document.getElementById('stats-ring');
   ring.setAttribute('stroke-dasharray', C);
@@ -1004,12 +1181,29 @@ function renderStats() {
     }
     heat.appendChild(cell);
   }
+
+  // 任务进度统计
+  renderTodoStats();
+}
+
+function renderTodoStats() {
+  const today = todayStr();
+  const todos = state.todos || [];
+  const total = todos.length;
+  const done = todos.filter(t => t.completedAt).length;
+  const pending = total - done;
+  const overdue = todos.filter(t => !t.completedAt && t.dueDate && t.dueDate < today).length;
+  const pct = total ? Math.round(done / total * 100) : 0;
+  document.getElementById('todo-done').textContent = done;
+  document.getElementById('todo-total').textContent = total;
+  document.getElementById('todo-pct').textContent = pct + '%';
+  document.getElementById('todo-fill').style.width = pct + '%';
+  document.getElementById('todo-pending').textContent = pending;
+  document.getElementById('todo-overdue').textContent = overdue;
 }
 
 /* ---- 项目页 ---- */
 function renderTasks() {
-  document.getElementById('plan-info').textContent =
-    `开始于 ${fmtCN(state.plan.start_date)}，结束于 ${fmtCN(planEndDate())}`;
   const list = document.getElementById('task-list');
   list.innerHTML = '';
   const tasks = activeTasks();
@@ -1183,6 +1377,236 @@ function resetPlan() {
   toast('已重置，全新开始！');
 }
 
+/* ============ 分享与导入导出 ============ */
+function shareProgress() {
+  const o = overallRate();
+  const day = currentDayNumber();
+  const st = streak();
+  const todoDone = (state.todos || []).filter(t => t.completedAt).length;
+  const todoTotal = (state.todos || []).length;
+  const text = `【重启人生 · 第 ${day} 天】\n` +
+    `打卡完成率 ${Math.round(o.rate * 100)}% · 连续 ${st} 天\n` +
+    `任务 ${todoDone}/${todoTotal} 已完成\n` +
+    `21 天习惯养成，每一天都在变好 🌱`;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      toast('进度已复制，去转发吧');
+    }).catch(() => {
+      prompt('复制下方文字分享', text);
+    });
+  } else {
+    prompt('复制下方文字分享', text);
+  }
+}
+
+function exportData() {
+  const json = JSON.stringify({
+    v: 4,
+    plan: state.plan,
+    tasks: state.tasks,
+    checkins: state.checkins,
+    notes: state.notes,
+    todos: state.todos,
+  });
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(json).then(() => {
+      toast('数据已复制到剪贴板');
+    }).catch(() => {
+      prompt('复制下方数据保存', json);
+    });
+  } else {
+    prompt('复制下方数据保存', json);
+  }
+}
+
+function showImportBox() {
+  document.getElementById('import-box').style.display = 'block';
+  document.getElementById('import-btn').style.display = 'block';
+  document.getElementById('import-box').focus();
+}
+
+function doImport() {
+  const raw = document.getElementById('import-box').value.trim();
+  if (!raw) { toast('请先粘贴数据'); return; }
+  if (!confirm('导入会覆盖现有所有数据，确定吗？')) return;
+  try {
+    const obj = JSON.parse(raw);
+    if (!obj.plan || !Array.isArray(obj.tasks)) {
+      toast('数据格式不正确');
+      return;
+    }
+    state.plan = obj.plan;
+    state.tasks = obj.tasks.map(t => ({
+      ...t,
+      frequencyType: t.frequencyType || 'daily',
+      targetDays: t.targetDays || null,
+      makeupUsed: t.makeupUsed || 0,
+    }));
+    state.checkins = obj.checkins || {};
+    state.notes = obj.notes || {};
+    state.todos = (obj.todos || []).map(t => ({
+      id: t.id, title: t.title, note: t.note || '',
+      dueDate: t.dueDate || null, createdAt: t.createdAt || Date.now(),
+      completedAt: t.completedAt || null, pinned: t.pinned || false,
+    }));
+    save();
+    document.getElementById('import-box').style.display = 'none';
+    document.getElementById('import-btn').style.display = 'none';
+    render();
+    toast('导入成功');
+  } catch(e) {
+    toast('JSON 解析失败');
+  }
+}
+
+/* ============ 任务（Todo）相关 ============ */
+let todoFilter = 'pending'; // pending / all / done
+let editingTodoId = null;
+
+function setTodoFilter(f) {
+  todoFilter = f;
+  document.querySelectorAll('#todo-seg .seg').forEach(s => {
+    s.classList.toggle('active', s.dataset.f === f);
+  });
+  renderTodos();
+}
+
+function renderTodos() {
+  // 同步 segment 高亮
+  document.querySelectorAll('#todo-seg .seg').forEach(s => {
+    s.classList.toggle('active', s.dataset.f === todoFilter);
+  });
+  const list = document.getElementById('todo-list');
+  list.innerHTML = '';
+  const todos = state.todos.slice().sort((a, b) => {
+    // 置顶在前
+    if (a.pinned !== b.pinned) return a.pinned ? -1 : 1;
+    // 未完成在前
+    if (!!a.completedAt !== !!b.completedAt) return a.completedAt ? 1 : -1;
+    // 同状态按创建时间倒序
+    return b.createdAt - a.createdAt;
+  });
+  const visible = todos.filter(t => {
+    if (todoFilter === 'all') return true;
+    if (todoFilter === 'done') return !!t.completedAt;
+    return !t.completedAt; // pending
+  });
+  const emptyHint = todoFilter === 'done' ? '还没有已完成任务'
+    : todoFilter === 'all' ? '还没有任务，加一个吧'
+    : '没有未完成任务';
+  if (visible.length === 0) {
+    list.innerHTML = '<div class="empty">' + emptyHint + '</div>';
+    return;
+  }
+  visible.forEach(t => {
+    const isDone = !!t.completedAt;
+    const row = document.createElement('div');
+    row.className = 'todo-row' + (isDone ? ' done' : '');
+    let due = '';
+    if (t.dueDate) {
+      const overdue = !isDone && t.dueDate < todayStr();
+      due = `<span class="ck-sub${overdue ? ' overdue' : ''}">${overdue ? '已逾期 ' : '截止 '}${fmtCN(t.dueDate).slice(0,-3).replace('周','')}</span>`;
+    }
+    row.innerHTML = `
+      <div class="todo-check" onclick="toggleTodo('${t.id}')"></div>
+      <div class="todo-body">
+        <div class="todo-title">${t.title}</div>
+        ${t.note ? `<div class="todo-note">${t.note}</div>` : ''}
+        ${due}
+      </div>
+      <div class="ops">
+        <button class="op" onclick="openTodoSheet('${t.id}')">✏️</button>
+        <button class="op" onclick="deleteTodo('${t.id}')">🗑️</button>
+      </div>`;
+    list.appendChild(row);
+  });
+}
+
+function toggleTodo(id) {
+  const t = state.todos.find(x => x.id === id);
+  if (!t) return;
+  if (t.completedAt) {
+    t.completedAt = null;
+    save();
+    renderTodos();
+    toast('已取消完成');
+  } else {
+    t.completedAt = new Date().toISOString();
+    save();
+    renderTodos();
+    toast('已完成！');
+  }
+}
+
+function toggleTodoPin(id) {
+  const t = state.todos.find(x => x.id === id);
+  if (!t) return;
+  t.pinned = !t.pinned;
+  save();
+  renderTodos();
+}
+
+function deleteTodo(id) {
+  if (!confirm('删除这个任务？')) return;
+  state.todos = state.todos.filter(x => x.id !== id);
+  save();
+  renderTodos();
+  toast('已删除');
+}
+
+function openTodoSheet(id) {
+  editingTodoId = id || null;
+  document.getElementById('todo-sheet-title').textContent = id ? '编辑任务' : '新建任务';
+  const t = id ? state.todos.find(x => x.id === id) : null;
+  document.getElementById('todo-title').value = t ? t.title : '';
+  document.getElementById('todo-note').value = t ? t.note : '';
+  document.getElementById('todo-due').value = t && t.dueDate ? t.dueDate : '';
+  // 截止日期范围：今天 ~ 计划最后一天
+  const due = document.getElementById('todo-due');
+  due.min = todayStr();
+  due.max = planEndDate();
+  document.getElementById('todo-mask').classList.add('show');
+}
+
+function closeTodoSheet() {
+  document.getElementById('todo-mask').classList.remove('show');
+  editingTodoId = null;
+}
+
+function saveTodo() {
+  const title = document.getElementById('todo-title').value.trim();
+  if (!title) {
+    toast('请输入任务标题');
+    return;
+  }
+  const note = document.getElementById('todo-note').value.trim();
+  const due = document.getElementById('todo-due').value || null;
+  if (due && (due < todayStr() || due > planEndDate())) {
+    toast('截止日期须在今天至计划最后一天内');
+    return;
+  }
+  if (editingTodoId) {
+    const t = state.todos.find(x => x.id === editingTodoId);
+    if (t) {
+      t.title = title;
+      t.note = note;
+      t.dueDate = due;
+    }
+  } else {
+    state.todos.push({
+      id: 'todo' + Date.now(),
+      title, note, dueDate: due,
+      createdAt: Date.now(),
+      completedAt: null,
+      pinned: false,
+    });
+  }
+  save();
+  closeTodoSheet();
+  renderTodos();
+  toast('已保存');
+}
+
 /* ---- 通用 ---- */
 function toast(msg) {
   const el = document.getElementById('toast');
@@ -1221,8 +1645,9 @@ function render() {
   const active = document.querySelector('.page.active').id.replace('page-','') || 'today';
   if (active === 'today') renderToday();
   else if (active === 'cal') renderCal();
-  else if (active === 'stats') renderStats();
+  else if (active === 'mine') renderStats();
   else if (active === 'tasks') renderTasks();
+  else if (active === 'todos') renderTodos();
 
   // 还原今日心得与心情
   const note = state.notes[todayStr()];

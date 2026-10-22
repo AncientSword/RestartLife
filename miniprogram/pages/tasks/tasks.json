@@ -1,0 +1,6 @@
+{
+  "usingComponents": {
+    "task-sheet": "/components/task-sheet/task-sheet"
+  },
+  "navigationBarTitleText": "打卡项目"
+}

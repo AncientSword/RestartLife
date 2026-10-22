@@ -1,0 +1,100 @@
+<!-- pages/today/today.wxml -->
+<view class="topbar">
+  <view>
+    <view class="h1">重启人生</view>
+    <view class="sub">{{todaySub}}</view>
+  </view>
+  <view class="badge">第 {{dayNumber}} 天</view>
+</view>
+
+<view class="page-wrap">
+  <!-- 今日进度环 -->
+  <view class="card">
+    <view class="ring-wrap">
+      <view class="ring">
+        <!-- 用 conic-gradient 模拟进度环 -->
+        <view class="ring-bg" style="background: conic-gradient(var(--primary) {{ringDeg}}deg, #EFEFEA 0deg);"></view>
+        <view class="ring-inner">
+          <view class="pct">{{pct}}%</view>
+          <view class="pct-sub">{{doneCount}} / {{totalCount}}</view>
+        </view>
+      </view>
+      <view class="ring-info">
+        <view class="big">今日打卡</view>
+        <view class="small">连续 {{streak}} 天</view>
+      </view>
+    </view>
+
+    <!-- 21 个进度点 -->
+    <view class="day-dots">
+      <view
+        wx:for="{{dayDots}}"
+        wx:key="index"
+        class="day-dot {{item.done ? 'done' : ''}} {{item.current ? 'current' : ''}}">
+      </view>
+    </view>
+  </view>
+
+  <!-- 打卡列表 -->
+  <view class="card">
+    <view class="card-title">打卡项目</view>
+    <view class="checklist">
+      <block wx:if="{{tasks.length === 0}}">
+        <view class="empty">今天没有打卡任务，去"项目"页设置目标日</view>
+      </block>
+      <view
+        wx:for="{{tasks}}"
+        wx:key="id"
+        class="check-item {{item.done ? 'done' : ''}}"
+        bindtap="onToggle"
+        data-id="{{item.id}}">
+        <view class="icon" style="background: {{item.colorBg}}; color: {{item.color}}">{{item.icon}}</view>
+        <view class="name">{{item.name}}</view>
+        <view class="check-box"></view>
+</view>
+    </view>
+  </view>
+
+  <!-- 未完成任务 -->
+  <view class="card">
+    <view class="card-title row between">
+      <text>未完成任务</text>
+      <text class="link" bindtap="goTodos">看全部 →</text>
+    </view>
+    <view wx:if="{{upcoming.length === 0}}" class="empty">没有未完成的截止任务</view>
+    <view
+      wx:for="{{upcoming}}"
+      wx:key="id"
+      class="todo-row">
+      <view class="todo-check" catchtap="onQuickToggle" data-id="{{item.id}}"></view>
+      <view class="todo-body">
+        <view class="todo-title">{{item.title}}</view>
+        <view class="ck-sub {{item.overdue ? 'overdue' : ''}}">{{item.badge}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 今日心得 -->
+  <view class="card">
+    <view class="card-title">今日心得</view>
+    <textarea
+      class="note"
+      placeholder="今天感觉怎么样？写下一点感受…"
+      placeholder-class="ph"
+      value="{{note.content}}"
+      bindinput="onNoteInput"
+      maxlength="500"
+      adjust-position="{{true}}"
+      cursor-spacing="20"
+      hold-keyboard="{{true}}"></textarea>
+    <view class="mood-row">
+      <view
+        wx:for="{{moods}}"
+        wx:key="key"
+        class="mood {{note.mood === item.key ? 'active' : ''}}"
+        bindtap="onMood"
+        data-mood="{{item.key}}">{{item.label}}</view>
+    </view>
+    <button class="btn note-save" bindtap="onSaveNote">保存</button>
+  </view>
+</view>
